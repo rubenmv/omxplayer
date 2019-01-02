@@ -81,6 +81,8 @@ Usage: omxplayer [OPTIONS] [FILE]
         --amp n                 set initial amplification in millibels (default 0)
         --no-osd                Do not display status information on screen
         --no-keys               Disable keyboard input (prevents hangs for certain TTYs)
+        --seek-small n          Seeking time, in seconds, for small jump          
+        --seek-large n          Seeking time, in seconds, for large jump           
         --subtitles path        External subtitles in UTF-8 srt format
         --font path             Default: /usr/share/fonts/truetype/freefont/FreeSans.ttf
         --italic-font path      Default: /usr/share/fonts/truetype/freefont/FreeSansOblique.ttf

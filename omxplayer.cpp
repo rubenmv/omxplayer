@@ -81,6 +81,8 @@ bool              m_NativeDeinterlace   = false;
 bool              m_HWDecode            = false;
 bool              m_osd                 = true;
 bool              m_no_keys             = false;
+double            m_seek_small          = 30;
+double            m_seek_large          = 600;
 std::string       m_external_subtitles_path;
 bool              m_has_external_subtitles = false;
 std::string       m_font_path           = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
@@ -569,6 +571,8 @@ int main(int argc, char *argv[])
   const int http_user_agent_opt = 0x301;
   const int lavfdopts_opt   = 0x400;
   const int avdict_opt      = 0x401;
+  const int seek_small_opt      = 0x500;
+  const int seek_large_opt      = 0x501;
 
   struct option longopts[] = {
     { "info",         no_argument,        NULL,          'i' },
@@ -618,6 +622,8 @@ int main(int argc, char *argv[])
     { "key-config",   required_argument,  NULL,          key_config_opt },
     { "no-osd",       no_argument,        NULL,          no_osd_opt },
     { "no-keys",      no_argument,        NULL,          no_keys_opt },
+    { "seek-small",   required_argument,  NULL,          seek_small_opt },
+    { "seek-large",   required_argument,  NULL,          seek_large_opt },
     { "orientation",  required_argument,  NULL,          orientation_opt },
     { "fps",          required_argument,  NULL,          fps_opt },
     { "live",         no_argument,        NULL,          live_opt },
@@ -765,6 +771,12 @@ int main(int argc, char *argv[])
       case no_keys_opt:
         m_no_keys = true;
         break;
+      case seek_small_opt:
+        m_seek_small = atof(optarg);
+        break;
+      case seek_large_opt:
+        m_seek_large = atof(optarg);
+      break;
       case font_opt:
         m_font_path = optarg;
         m_asked_for_font = true;
@@ -1310,7 +1322,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-          m_incr = -600.0;
+          m_incr = -1 * m_seek_large;
         }
         break;
       case KeyConfig::ACTION_NEXT_CHAPTER:
@@ -1324,7 +1336,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-          m_incr = 600.0;
+          m_incr = m_seek_large;
         }
         break;
       case KeyConfig::ACTION_PREVIOUS_SUBTITLE:
@@ -1422,16 +1434,16 @@ int main(int argc, char *argv[])
         goto do_exit;
         break;
       case KeyConfig::ACTION_SEEK_BACK_SMALL:
-        if(m_omx_reader.CanSeek()) m_incr = -30.0;
+        if(m_omx_reader.CanSeek()) m_incr = -1 * m_seek_small;
         break;
       case KeyConfig::ACTION_SEEK_FORWARD_SMALL:
-        if(m_omx_reader.CanSeek()) m_incr = 30.0;
+        if(m_omx_reader.CanSeek()) m_incr = m_seek_small;
         break;
       case KeyConfig::ACTION_SEEK_FORWARD_LARGE:
-        if(m_omx_reader.CanSeek()) m_incr = 600.0;
+        if(m_omx_reader.CanSeek()) m_incr = m_seek_large;
         break;
       case KeyConfig::ACTION_SEEK_BACK_LARGE:
-        if(m_omx_reader.CanSeek()) m_incr = -600.0;
+        if(m_omx_reader.CanSeek()) m_incr = -1 * m_seek_large;
         break;
       case KeyConfig::ACTION_SEEK_RELATIVE:
           m_incr = result.getArg() * 1e-6;
